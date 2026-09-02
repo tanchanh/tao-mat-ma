@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tạo Và Đánh Giá Mật Mã - Dương Tấn Chánh</title>
+<title>TẠO MẬT MÃ - Dương Tấn Chánh</title>
 <style>
 * {
   box-sizing: border-box;
@@ -29,7 +29,7 @@ body {
   font-weight: normal;
   background-color: var(--bg-color);
   color: var(--text-color);
-  padding: 1rem;
+  padding: 0.5rem;
   padding-bottom: 5rem;
   line-height: 1.5;
 }
@@ -51,7 +51,7 @@ h2 {
 h3 {
   font-size: 1.3rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 h4 {
@@ -69,19 +69,54 @@ h4 {
   color: var(--text-color);
 }
 
+.action-button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn-action {
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-main);
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-action:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.btn-secondary.is-success {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
 .password-section {
   margin-bottom: 1rem;
 }
 
-.password-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: stretch;
-}
-
 .password-text-input {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
   min-height: 3.5rem;
   padding: 1rem;
   border: 2px solid var(--border-color);
@@ -95,31 +130,6 @@ h4 {
   outline: none;
   line-height: 1.35;
   text-align: center;
-}
-
-.copy-button {
-  min-width: 3.5rem;
-  min-height: 3.5rem;
-  padding: 0;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
-  background-color: #ffffff;
-  color: var(--text-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.copy-button svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.copy-button.is-success {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
 }
 
 .strength-section {
@@ -199,15 +209,6 @@ h4 {
   color: var(--border-color);
 }
 
-.status-notification {
-  min-height: 1.8rem;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-}
-
 .controls-section {
   display: grid;
   gap: 1rem;
@@ -265,31 +266,6 @@ h4 {
   cursor: pointer;
 }
 
-.btn-primary {
-  min-height: 3rem;
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--primary-color);
-  border-radius: var(--radius-main);
-  background-color: var(--primary-color);
-  color: #ffffff;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn-primary:active {
-  transform: translateY(1px);
-}
-
-.btn-primary svg {
-  width: 1.4rem;
-  height: 1.4rem;
-}
-
 .advice-card {
   padding: 1rem;
   border: 2px solid var(--border-color);
@@ -307,17 +283,18 @@ h4 {
 
 <body>
 
-<h1>Tạo Và Đánh Giá Mật Mã</h1>
+<h1>TẠO MẬT MÃ</h1>
 <p class="author-name">Dương Tấn Chánh</p>
 
-<!-- KHUNG MẬT MÃ VÀ NÚT COPY ĐỘC LẬP -->
+<!-- 2 NÚT HÀNH ĐỘNG SONG SONG -->
+<div class="action-button-row">
+  <button id="buttonCreatePassword" class="btn-action btn-primary" type="button">Tạo Mã</button>
+  <button id="buttonCopyMain" class="btn-action btn-secondary" type="button">Sao Chép</button>
+</div>
+
+<!-- KHUNG MẬT MÃ 100% BỀ NGANG -->
 <section class="password-section">
-  <div class="password-row">
-    <input id="mainPasswordInput" class="password-text-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nhập hoặc tạo mật mã..." aria-label="Mật mã">
-    <button id="buttonCopyMain" class="copy-button" type="button" aria-label="Sao chép mật mã" title="Sao chép mật mã">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
-    </button>
-  </div>
+  <input id="mainPasswordInput" class="password-text-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nhập hoặc tạo mật mã..." aria-label="Mật mã">
 </section>
 
 <!-- KHU VỰC ĐÁNH GIÁ ĐỘ MẠNH -->
@@ -352,11 +329,11 @@ h4 {
   </div>
 </section>
 
-<div id="notificationMessage" class="status-notification" aria-live="polite"></div>
-
-<!-- BẢNG ĐIỀU KHIỂN TẠO MÃ -->
+<!-- BẢNG LỰA CHỌN TẠO MÃ -->
 <section class="controls-section">
   <div class="control-group">
+    <h3>Lựa Chọn Tạo Mã</h3>
+
     <div class="length-control">
       <label for="passwordLengthInput">Độ dài ký tự (4 - 128):</label>
       <input id="passwordLengthInput" class="length-input" type="number" value="16" min="4" max="128" inputmode="numeric" aria-label="Độ dài mật mã">
@@ -380,11 +357,6 @@ h4 {
         Ký hiệu đặc biệt
       </label>
     </div>
-
-    <button id="buttonCreatePassword" class="btn-primary" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M3 21v-5h5"></path></svg>
-      Tạo mã mới
-    </button>
   </div>
 </section>
 
@@ -498,7 +470,6 @@ function generateNewPassword() {
     mainInput.value = finalPassword;
 
     clearCopyState();
-    getElement("notificationMessage").textContent = "";
     evaluatePasswordStrength(finalPassword);
   } catch (error) {
     console.error("Lỗi tạo mật mã:", error);
@@ -584,17 +555,13 @@ function clearCopyState() {
     copyTimerTracker = null;
   }
 
-  const copySvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>`;
   const buttonCopy = getElement("buttonCopyMain");
-
-  buttonCopy.innerHTML = copySvg;
+  buttonCopy.textContent = "Sao Chép";
   buttonCopy.classList.remove("is-success");
 }
 
 async function copyToClipboard(textToCopy, triggerButton) {
   if (!textToCopy) return;
-
-  const checkSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 
   try {
     if (navigator.clipboard && window.isSecureContext) {
@@ -617,17 +584,18 @@ async function copyToClipboard(textToCopy, triggerButton) {
       clearTimeout(copyTimerTracker);
     }
 
-    triggerButton.innerHTML = checkSvg;
+    triggerButton.textContent = "Đã Chép!";
     triggerButton.classList.add("is-success");
-    getElement("notificationMessage").textContent = "Đã sao chép mật mã vào bộ nhớ tạm.";
 
     copyTimerTracker = setTimeout(() => {
       clearCopyState();
-      getElement("notificationMessage").textContent = "";
     }, 1800);
   } catch (error) {
-    getElement("notificationMessage").textContent = "Không thể sao chép mật mã.";
+    triggerButton.textContent = "Lỗi Chép!";
     console.error("Lỗi sao chép:", error);
+    copyTimerTracker = setTimeout(() => {
+      clearCopyState();
+    }, 1800);
   }
 }
 
@@ -661,7 +629,6 @@ lengthInputElement.addEventListener("wheel", (event) => {
 /* Sự kiện trên ô mật mã chính (Live validation) */
 getElement("mainPasswordInput").addEventListener("input", (event) => {
   clearCopyState();
-  getElement("notificationMessage").textContent = "";
   evaluatePasswordStrength(event.target.value);
 });
 
