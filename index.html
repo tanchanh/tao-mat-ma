@@ -513,11 +513,11 @@ function evaluatePasswordStrength(passwordText) {
   let strengthLabel = "Yếu";
   let fillPercentage = 25;
 
-  /* Chuẩn đánh giá độ mạnh: Ngăn chặn chuỗi lặp đơn điệu dài đạt điểm tối đa */
+  /* Thang điểm tăng tiến liên tục, khoa học, ngăn chặn chuỗi lặp đơn điệu */
   if ((passwordLength >= 20 && varietyCount >= 2) || (passwordLength >= 16 && varietyCount >= 4)) {
     strengthLabel = "Rất mạnh";
     fillPercentage = 100;
-  } else if ((passwordLength >= 14 && varietyCount >= 3) || (passwordLength >= 12 && varietyCount >= 4)) {
+  } else if ((passwordLength >= 16 && varietyCount >= 2) || (passwordLength >= 14 && varietyCount >= 3) || (passwordLength >= 12 && varietyCount >= 4)) {
     strengthLabel = "Mạnh";
     fillPercentage = 75;
   } else if (passwordLength >= 10 && varietyCount >= 2) {
@@ -561,7 +561,16 @@ function clearCopyState() {
 }
 
 async function copyToClipboard(textToCopy, triggerButton) {
-  if (!textToCopy) return;
+  if (!textToCopy) {
+    if (copyTimerTracker) {
+      clearTimeout(copyTimerTracker);
+    }
+    triggerButton.textContent = "Chưa Có Mã!";
+    copyTimerTracker = setTimeout(() => {
+      clearCopyState();
+    }, 1200);
+    return;
+  }
 
   try {
     if (navigator.clipboard && window.isSecureContext) {
