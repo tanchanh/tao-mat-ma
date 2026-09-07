@@ -10,54 +10,58 @@
   margin: 0;
   padding: 0;
   word-break: normal;
-  overflow-wrap: normal;
-  hyphens: none;
+  overflow-wrap: break-word;
 }
 
 :root {
-  --bg-color: #f8fafc;
-  --text-color: #0f172a;
-  --border-color: #94a3b8;
-  --primary-color: #0d9488;
-  --spacing-main: 1rem;
-  --radius-main: 0.5rem;
+  --color-blue-primary: #0066B6;
+  --color-indigo: #4020D0;
+  --color-green-bright: #7FDD0F;
+  --color-green-dark: #009911;
+  --color-orange: #EE6000;
+  --color-red: #FF2040;
+  --color-bg-darkest: #000000;
+  --color-bg-body: #1A1A1A;
+  --color-bg-card: #262626;
+  --color-text-muted: #CCCCCC;
+  --color-text-white: #FFFFFF;
 }
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: normal;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--color-bg-body);
+  color: var(--color-text-white);
   padding: 0.5rem;
   padding-bottom: 5rem;
   line-height: 1.5;
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 h1 {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: bold;
   text-align: center;
   margin-top: 0.5rem;
   margin-bottom: 0.25rem;
+  color: var(--color-text-white);
 }
 
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  color: var(--color-text-white);
 }
 
 h3 {
-  font-size: 1.3rem;
-  font-weight: bold;
-  margin-bottom: 0.75rem;
-}
-
-h4 {
   font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-white);
 }
 
 .author-name {
@@ -66,7 +70,7 @@ h4 {
   font-weight: normal;
   text-align: right;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: var(--color-text-muted);
 }
 
 .action-button-row {
@@ -79,15 +83,17 @@ h4 {
 .btn-action {
   min-height: 3rem;
   padding: 0.5rem 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
-  font-size: 1.2rem;
+  border: 2px solid var(--color-bg-card);
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
+  transition: opacity 0.2s ease;
 }
 
 .btn-action:active {
@@ -95,82 +101,101 @@ h4 {
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: #ffffff;
+  background-color: var(--color-blue-primary);
+  border-color: var(--color-blue-primary);
+  color: var(--color-text-white);
 }
 
 .btn-secondary {
-  background-color: #ffffff;
-  border-color: var(--border-color);
-  color: var(--text-color);
+  background-color: var(--color-bg-card);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-white);
 }
 
 .btn-secondary.is-success {
-  border-color: var(--primary-color);
-  color: var(--primary-color);
+  border-color: var(--color-green-bright);
+  color: var(--color-green-bright);
+}
+
+.svg-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  stroke-width: 2px;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .password-section {
   margin-bottom: 1rem;
 }
 
+.password-display-wrapper {
+  width: 100%;
+  min-height: 3.8rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--color-bg-card);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-darkest);
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+}
+
 .password-text-input {
   width: 100%;
-  min-height: 3.5rem;
-  padding: 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
+  border: none;
+  outline: none;
+  background: transparent;
   font-family: ui-monospace, SFMono-Regular, "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, monospace;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
   letter-spacing: 0.08rem;
-  color: var(--text-color);
-  background-color: #ffffff;
-  outline: none;
+  color: var(--color-text-white);
   line-height: 1.35;
   text-align: center;
+  white-space: nowrap;
 }
 
 .strength-section {
   display: grid;
   gap: 0.75rem;
   padding: 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
+  border: 2px solid var(--color-bg-card);
+  border-radius: 0.5rem;
   margin-bottom: 1rem;
-  background-color: #ffffff;
+  background-color: var(--color-bg-card);
 }
 
 .strength-status-display {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
-  color: var(--border-color);
+  color: var(--color-text-muted);
   min-height: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.strength-status-display.is-active {
-  color: var(--primary-color);
-}
-
 .strength-meter-track {
   width: 100%;
   height: 0.8rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
-  background-color: var(--bg-color);
+  border: 2px solid var(--color-bg-darkest);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-darkest);
   overflow: hidden;
 }
 
 .strength-meter-bar {
   width: 0;
   height: 100%;
-  background-color: var(--primary-color);
-  transition: width 0.3s ease;
+  background-color: var(--color-red);
+  transition: width 0.3s ease, background-color 0.3s ease;
 }
 
 .criteria-checklist {
@@ -179,7 +204,7 @@ h4 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem 1.2rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: normal;
 }
 
@@ -191,22 +216,19 @@ h4 {
 }
 
 .criteria-badge {
-  font-size: 1.8rem;
-  font-weight: normal;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  line-height: 1;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .criteria-badge.is-valid {
-  color: var(--primary-color);
+  color: var(--color-green-bright);
 }
 
 .criteria-badge.is-invalid {
-  color: var(--border-color);
+  color: var(--color-red);
 }
 
 .controls-section {
@@ -220,30 +242,47 @@ h4 {
   grid-template-columns: 1fr;
   gap: 0.75rem;
   padding: 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
-  background-color: #ffffff;
+  border: 2px solid var(--color-bg-card);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-card);
 }
 
-.length-control {
+.length-control-container {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 0.5rem;
 }
 
-.length-input {
-  width: 7.5rem;
-  min-height: 3rem;
+.length-inputs-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.length-range-slider {
+  flex: 1;
+  height: 0.6rem;
+  accent-color: var(--color-blue-primary);
+  cursor: pointer;
+}
+
+.length-input-number {
+  width: 5rem;
+  min-height: 2.6rem;
   padding: 0.25rem 0.5rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
-  font-size: 1.2rem;
+  border: 2px solid var(--color-bg-darkest);
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
   font-weight: bold;
   text-align: center;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--color-bg-darkest);
+  color: var(--color-text-white);
+  outline: none;
+}
+
+.length-input-number:focus {
+  border-color: var(--color-blue-primary);
 }
 
 .checkbox-group {
@@ -258,25 +297,29 @@ h4 {
   gap: 0.5rem;
   cursor: pointer;
   user-select: none;
+  color: var(--color-text-white);
 }
 
 .checkbox-label input {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.3rem;
+  height: 1.3rem;
   cursor: pointer;
+  accent-color: var(--color-blue-primary);
 }
 
 .advice-card {
   padding: 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-main);
-  background-color: #ffffff;
-  font-size: 1.2rem;
+  border: 2px solid var(--color-bg-card);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-card);
+  font-size: 1.1rem;
   line-height: 1.6;
+  color: var(--color-text-muted);
 }
 
 .advice-card strong {
   font-weight: bold;
+  color: var(--color-text-white);
 }
 </style>
 </head>
@@ -288,13 +331,26 @@ h4 {
 
 <!-- 2 NÚT HÀNH ĐỘNG SONG SONG -->
 <div class="action-button-row">
-  <button id="buttonCreatePassword" class="btn-action btn-primary" type="button">Tạo Mã</button>
-  <button id="buttonCopyMain" class="btn-action btn-secondary" type="button">Sao Chép</button>
+  <button id="buttonCreatePassword" class="btn-action btn-primary" type="button">
+    <svg class="svg-icon" viewBox="0 0 24 24">
+      <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+    </svg>
+    <span>Tạo Mã</span>
+  </button>
+  <button id="buttonCopyMain" class="btn-action btn-secondary" type="button">
+    <svg id="iconCopyState" class="svg-icon" viewBox="0 0 24 24">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+    </svg>
+    <span id="labelButtonCopy">Sao Chép</span>
+  </button>
 </div>
 
-<!-- KHUNG MẬT MÃ 100% BỀ NGANG -->
+<!-- KHUNG MẬT MÃ CUỘN NGANG NỘI BỘ -->
 <section class="password-section">
-  <input id="mainPasswordInput" class="password-text-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nhập hoặc tạo mật mã..." aria-label="Mật mã">
+  <div class="password-display-wrapper">
+    <input id="mainPasswordInput" class="password-text-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nhập hoặc tạo mật mã..." aria-label="Mật mã">
+  </div>
 </section>
 
 <!-- KHU VỰC ĐÁNH GIÁ ĐỘ MẠNH -->
@@ -308,23 +364,23 @@ h4 {
   <div class="criteria-checklist">
     <span class="criteria-item">
       <span>Độ dài: <strong id="valueLengthCounter">0</strong> ký tự</span>
-      <span id="badgeLength" class="criteria-badge is-invalid">✕</span>
+      <span id="badgeLength" class="criteria-badge is-invalid"></span>
     </span>
     <span class="criteria-item">
       <span>Chữ hoa</span>
-      <span id="badgeUppercase" class="criteria-badge is-invalid">✕</span>
+      <span id="badgeUppercase" class="criteria-badge is-invalid"></span>
     </span>
     <span class="criteria-item">
       <span>Chữ thường</span>
-      <span id="badgeLowercase" class="criteria-badge is-invalid">✕</span>
+      <span id="badgeLowercase" class="criteria-badge is-invalid"></span>
     </span>
     <span class="criteria-item">
       <span>Chữ số</span>
-      <span id="badgeNumber" class="criteria-badge is-invalid">✕</span>
+      <span id="badgeNumber" class="criteria-badge is-invalid"></span>
     </span>
     <span class="criteria-item">
       <span>Ký hiệu</span>
-      <span id="badgeSymbol" class="criteria-badge is-invalid">✕</span>
+      <span id="badgeSymbol" class="criteria-badge is-invalid"></span>
     </span>
   </div>
 </section>
@@ -334,9 +390,12 @@ h4 {
   <div class="control-group">
     <h3>Lựa Chọn Tạo Mã</h3>
 
-    <div class="length-control">
-      <label for="passwordLengthInput">Độ dài ký tự (4 - 128):</label>
-      <input id="passwordLengthInput" class="length-input" type="number" value="16" min="4" max="128" inputmode="numeric" aria-label="Độ dài mật mã">
+    <div class="length-control-container">
+      <label for="passwordLengthSlider">Độ dài ký tự (4 - 128):</label>
+      <div class="length-inputs-row">
+        <input id="passwordLengthSlider" class="length-range-slider" type="range" min="4" max="128" value="16" aria-label="Thanh trượt độ dài">
+        <input id="passwordLengthInput" class="length-input-number" type="number" min="4" max="128" value="16" inputmode="numeric" aria-label="Ô nhập độ dài">
+      </div>
     </div>
 
     <div class="checkbox-group">
@@ -356,6 +415,10 @@ h4 {
         <input id="optionSymbols" class="character-option-checkbox" type="checkbox" checked>
         Ký hiệu đặc biệt
       </label>
+      <label class="checkbox-label">
+        <input id="optionExcludeAmbiguous" class="character-option-checkbox" type="checkbox">
+        Loại trừ ký tự dễ nhầm (0, O, l, I, 1...)
+      </label>
     </div>
   </div>
 </section>
@@ -373,14 +436,22 @@ const CHARACTER_SETS = {
   symbols: "!@#$%^&*()-_=+[]{};:,.?"
 };
 
-const STRENGTH_LABELS_MAP = {
-  "Yếu": "Mật Mã YẾU",
-  "Trung bình": "Mật Mã TRUNG BÌNH",
-  "Mạnh": "Mật Mã MẠNH",
-  "Rất mạnh": "Mật Mã RẤT MẠNH"
+const AMBIGUOUS_CHARACTERS = /[O0Il1|`'"~,;:.]/g;
+
+const SVG_CHECK = '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+const SVG_CROSS = '<svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+const SVG_COPY_DEFAULT = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+const SVG_COPY_SUCCESS = '<polyline points="20 6 9 17 4 12"/>';
+
+const STRENGTH_CONFIGS = {
+  weak: { label: "Mật Mã YẾU", percent: 25, color: "var(--color-red)" },
+  medium: { label: "Mật Mã TRUNG BÌNH", percent: 50, color: "var(--color-orange)" },
+  strong: { label: "Mật Mã MẠNH", percent: 75, color: "var(--color-green-dark)" },
+  veryStrong: { label: "Mật Mã RẤT MẠNH", percent: 100, color: "var(--color-green-bright)" }
 };
 
 let copyTimerTracker = null;
+let sliderDebounceTimer = null;
 
 const getElement = (id) => document.getElementById(id);
 
@@ -413,51 +484,65 @@ function shuffleArray(targetArray) {
   return result;
 }
 
-function normalizePasswordLength() {
-  const lengthInput = getElement("passwordLengthInput");
-  let parsedValue = parseInt(lengthInput.value, 10);
+function syncPasswordLength(sourceValue) {
+  let parsedValue = parseInt(sourceValue, 10);
   if (isNaN(parsedValue) || parsedValue < 4) {
     parsedValue = 4;
   } else if (parsedValue > 128) {
     parsedValue = 128;
   }
-  lengthInput.value = parsedValue;
+
+  getElement("passwordLengthInput").value = parsedValue;
+  getElement("passwordLengthSlider").value = parsedValue;
   return parsedValue;
 }
 
 function generateNewPassword() {
   try {
-    const desiredLength = normalizePasswordLength();
+    const desiredLength = syncPasswordLength(getElement("passwordLengthInput").value);
 
     const activeUppercase = getElement("optionUppercase").checked;
     const activeLowercase = getElement("optionLowercase").checked;
     const activeNumbers = getElement("optionNumbers").checked;
     const activeSymbols = getElement("optionSymbols").checked;
+    const excludeAmbiguous = getElement("optionExcludeAmbiguous").checked;
+
+    let poolUppercase = CHARACTER_SETS.uppercase;
+    let poolLowercase = CHARACTER_SETS.lowercase;
+    let poolNumbers = CHARACTER_SETS.numbers;
+    let poolSymbols = CHARACTER_SETS.symbols;
+
+    if (excludeAmbiguous) {
+      poolUppercase = poolUppercase.replace(AMBIGUOUS_CHARACTERS, "");
+      poolLowercase = poolLowercase.replace(AMBIGUOUS_CHARACTERS, "");
+      poolNumbers = poolNumbers.replace(AMBIGUOUS_CHARACTERS, "");
+      poolSymbols = poolSymbols.replace(AMBIGUOUS_CHARACTERS, "");
+    }
 
     let combinedPool = "";
     const mandatoryCharacters = [];
 
-    if (activeUppercase) {
-      combinedPool += CHARACTER_SETS.uppercase;
-      mandatoryCharacters.push(getRandomCharacter(CHARACTER_SETS.uppercase));
+    if (activeUppercase && poolUppercase.length > 0) {
+      combinedPool += poolUppercase;
+      mandatoryCharacters.push(getRandomCharacter(poolUppercase));
     }
-    if (activeLowercase) {
-      combinedPool += CHARACTER_SETS.lowercase;
-      mandatoryCharacters.push(getRandomCharacter(CHARACTER_SETS.lowercase));
+    if (activeLowercase && poolLowercase.length > 0) {
+      combinedPool += poolLowercase;
+      mandatoryCharacters.push(getRandomCharacter(poolLowercase));
     }
-    if (activeNumbers) {
-      combinedPool += CHARACTER_SETS.numbers;
-      mandatoryCharacters.push(getRandomCharacter(CHARACTER_SETS.numbers));
+    if (activeNumbers && poolNumbers.length > 0) {
+      combinedPool += poolNumbers;
+      mandatoryCharacters.push(getRandomCharacter(poolNumbers));
     }
-    if (activeSymbols) {
-      combinedPool += CHARACTER_SETS.symbols;
-      mandatoryCharacters.push(getRandomCharacter(CHARACTER_SETS.symbols));
+    if (activeSymbols && poolSymbols.length > 0) {
+      combinedPool += poolSymbols;
+      mandatoryCharacters.push(getRandomCharacter(poolSymbols));
     }
 
     if (mandatoryCharacters.length === 0) {
       getElement("optionLowercase").checked = true;
-      combinedPool += CHARACTER_SETS.lowercase;
-      mandatoryCharacters.push(getRandomCharacter(CHARACTER_SETS.lowercase));
+      combinedPool += poolLowercase;
+      mandatoryCharacters.push(getRandomCharacter(poolLowercase));
     }
 
     const generatedArray = mandatoryCharacters.slice();
@@ -478,7 +563,7 @@ function generateNewPassword() {
 
 function updateCriteriaBadge(elementId, isValid) {
   const badge = getElement(elementId);
-  badge.textContent = isValid ? "✓" : "✕";
+  badge.innerHTML = isValid ? SVG_CHECK : SVG_CROSS;
   badge.classList.toggle("is-valid", isValid);
   badge.classList.toggle("is-invalid", !isValid);
 }
@@ -510,29 +595,25 @@ function evaluatePasswordStrength(passwordText) {
   if (hasNumbers) varietyCount++;
   if (hasSymbols) varietyCount++;
 
-  let strengthLabel = "Yếu";
-  let fillPercentage = 25;
+  let strengthConfig = STRENGTH_CONFIGS.weak;
 
-  /* Thang điểm tăng tiến liên tục, khoa học, ngăn chặn chuỗi lặp đơn điệu */
   if ((passwordLength >= 20 && varietyCount >= 2) || (passwordLength >= 16 && varietyCount >= 4)) {
-    strengthLabel = "Rất mạnh";
-    fillPercentage = 100;
+    strengthConfig = STRENGTH_CONFIGS.veryStrong;
   } else if ((passwordLength >= 16 && varietyCount >= 2) || (passwordLength >= 14 && varietyCount >= 3) || (passwordLength >= 12 && varietyCount >= 4)) {
-    strengthLabel = "Mạnh";
-    fillPercentage = 75;
+    strengthConfig = STRENGTH_CONFIGS.strong;
   } else if (passwordLength >= 10 && varietyCount >= 2) {
-    strengthLabel = "Trung bình";
-    fillPercentage = 50;
+    strengthConfig = STRENGTH_CONFIGS.medium;
   } else {
-    strengthLabel = "Yếu";
-    fillPercentage = 25;
+    strengthConfig = STRENGTH_CONFIGS.weak;
   }
 
-  getElement("strengthMeterFill").style.width = fillPercentage + "%";
+  const meterFill = getElement("strengthMeterFill");
+  meterFill.style.width = strengthConfig.percent + "%";
+  meterFill.style.backgroundColor = strengthConfig.color;
 
   const statusTextElement = getElement("strengthStatusText");
-  statusTextElement.textContent = STRENGTH_LABELS_MAP[strengthLabel];
-  statusTextElement.classList.add("is-active");
+  statusTextElement.textContent = strengthConfig.label;
+  statusTextElement.style.color = strengthConfig.color;
 }
 
 function resetStrengthView() {
@@ -543,10 +624,13 @@ function resetStrengthView() {
   updateCriteriaBadge("badgeNumber", false);
   updateCriteriaBadge("badgeSymbol", false);
 
-  getElement("strengthMeterFill").style.width = "0%";
+  const meterFill = getElement("strengthMeterFill");
+  meterFill.style.width = "0%";
+  meterFill.style.backgroundColor = "transparent";
+
   const statusTextElement = getElement("strengthStatusText");
   statusTextElement.textContent = "Chưa có mật mã";
-  statusTextElement.classList.remove("is-active");
+  statusTextElement.style.color = "var(--color-text-muted)";
 }
 
 function clearCopyState() {
@@ -556,7 +640,8 @@ function clearCopyState() {
   }
 
   const buttonCopy = getElement("buttonCopyMain");
-  buttonCopy.textContent = "Sao Chép";
+  getElement("labelButtonCopy").textContent = "Sao Chép";
+  getElement("iconCopyState").innerHTML = SVG_COPY_DEFAULT;
   buttonCopy.classList.remove("is-success");
 }
 
@@ -565,7 +650,7 @@ async function copyToClipboard(textToCopy, triggerButton) {
     if (copyTimerTracker) {
       clearTimeout(copyTimerTracker);
     }
-    triggerButton.textContent = "Chưa Có Mã!";
+    getElement("labelButtonCopy").textContent = "Chưa Có Mã!";
     copyTimerTracker = setTimeout(() => {
       clearCopyState();
     }, 1200);
@@ -593,14 +678,15 @@ async function copyToClipboard(textToCopy, triggerButton) {
       clearTimeout(copyTimerTracker);
     }
 
-    triggerButton.textContent = "Đã Chép!";
+    getElement("labelButtonCopy").textContent = "Đã Chép!";
+    getElement("iconCopyState").innerHTML = SVG_COPY_SUCCESS;
     triggerButton.classList.add("is-success");
 
     copyTimerTracker = setTimeout(() => {
       clearCopyState();
     }, 1800);
   } catch (error) {
-    triggerButton.textContent = "Lỗi Chép!";
+    getElement("labelButtonCopy").textContent = "Lỗi Chép!";
     console.error("Lỗi sao chép:", error);
     copyTimerTracker = setTimeout(() => {
       clearCopyState();
@@ -608,48 +694,85 @@ async function copyToClipboard(textToCopy, triggerButton) {
   }
 }
 
-/* Tự động chặn bỏ chọn toàn bộ checkbox */
+/* Tự động tạo lại mã khi tích/bỏ chọn checkbox */
 document.querySelectorAll(".character-option-checkbox").forEach((checkbox) => {
   checkbox.addEventListener("change", function() {
-    const checkedCount = document.querySelectorAll(".character-option-checkbox:checked").length;
+    const mainCheckboxes = [
+      getElement("optionUppercase"),
+      getElement("optionLowercase"),
+      getElement("optionNumbers"),
+      getElement("optionSymbols")
+    ];
+
+    const checkedCount = mainCheckboxes.filter(item => item.checked).length;
     if (checkedCount === 0) {
       this.checked = true;
     }
+
+    generateNewPassword();
   });
 });
 
-/* Sự kiện chuẩn hoá và phím tắt trên ô nhập độ dài */
-const lengthInputElement = getElement("passwordLengthInput");
+/* Thanh trượt: Đồng bộ số ngay lập tức, chờ 2 giây sau khi ngừng trượt mới sinh mã */
+const lengthSliderInput = getElement("passwordLengthSlider");
+const lengthNumberInput = getElement("passwordLengthInput");
 
-lengthInputElement.addEventListener("change", normalizePasswordLength);
-lengthInputElement.addEventListener("blur", normalizePasswordLength);
+lengthSliderInput.addEventListener("input", (event) => {
+  const currentVal = event.target.value;
+  getElement("passwordLengthInput").value = currentVal;
 
-lengthInputElement.addEventListener("keydown", (event) => {
+  if (sliderDebounceTimer) {
+    clearTimeout(sliderDebounceTimer);
+  }
+
+  sliderDebounceTimer = setTimeout(() => {
+    generateNewPassword();
+  }, 2000);
+});
+
+/* Ô nhập số: Chỉ chuẩn hoá và sinh mã khi kết thúc nhập (change, blur, Enter) */
+lengthNumberInput.addEventListener("change", () => {
+  syncPasswordLength(lengthNumberInput.value);
+  generateNewPassword();
+});
+
+lengthNumberInput.addEventListener("blur", () => {
+  syncPasswordLength(lengthNumberInput.value);
+  generateNewPassword();
+});
+
+lengthNumberInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
+    syncPasswordLength(lengthNumberInput.value);
     generateNewPassword();
   }
 });
 
-lengthInputElement.addEventListener("wheel", (event) => {
+lengthNumberInput.addEventListener("wheel", (event) => {
   event.preventDefault();
 }, { passive: false });
 
-/* Sự kiện trên ô mật mã chính (Live validation) */
+/* Sự kiện trên ô mật mã chính */
 getElement("mainPasswordInput").addEventListener("input", (event) => {
   clearCopyState();
   evaluatePasswordStrength(event.target.value);
 });
 
 /* Nút tạo mã và nút sao chép */
-getElement("buttonCreatePassword").addEventListener("click", generateNewPassword);
+getElement("buttonCreatePassword").addEventListener("click", () => {
+  if (sliderDebounceTimer) {
+    clearTimeout(sliderDebounceTimer);
+  }
+  generateNewPassword();
+});
 
 getElement("buttonCopyMain").addEventListener("click", function() {
   const currentPassword = getElement("mainPasswordInput").value;
   copyToClipboard(currentPassword, this);
 });
 
-/* Khởi động mặc định: Tự động tạo và chấm điểm ngay khi tải trang */
+/* Khởi động mặc định */
 generateNewPassword();
 </script>
 </body>
