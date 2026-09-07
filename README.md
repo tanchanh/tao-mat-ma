@@ -50,30 +50,6 @@ Gọi $L$ là độ dài chuỗi và $V$ là số nhóm ký tự có mặt ($0 \
 
 ---
 
-## 🚀 Hướng Dẫn Sử Dụng & Khởi Chạy
-
-Không cần cài đặt Node.js, Webpack hay cấu hình máy chủ Web phức tạp:
-
-### Cách 1: Tải về và mở trực tiếp
-1. Tải tập tin `index.html` về máy tính hoặc điện thoại.
-2. Nhấp đúp vào tập tin `index.html` để mở ngay bằng bất kỳ trình duyệt web nào (Google Chrome, Microsoft Edge, Safari, Firefox...).
-
-### Cách 2: Clone qua Git
-```bash
-# Sao chép kho lưu trữ
-git clone https://github.com/<tai-khoan-cua-ban>/tao-va-danh-gia-mat-ma.git
-
-# Mở thư mục
-cd tao-va-danh-gia-mat-ma
-
-# Chạy trực tiếp trên trình duyệt
-open index.html # Trên macOS
-# hoặc
-start index.html # Trên Windows
-```
-
----
-
 ## 🛠️ Công Nghệ Xây Dựng
 
 * **Ngôn ngữ:** Vanilla HTML5, Modern CSS, Vanilla JavaScript (ES6+).
@@ -87,9 +63,6 @@ start index.html # Trên Windows
 
 * **Tác giả:** **Dương Tấn Chánh**
 * **Chuyên mục:** Ứng dụng web Single-Page / Lập trình Front-end hiệu năng cao.
-
----
-
 ## 📄 Giấy Phép (License)
 
 Dự án được phân phối dưới giấy phép **MIT License**. Bạn được toàn quyền sử dụng, chỉnh sửa và tích hợp vào các dự án cá nhân hoặc thương mại.
