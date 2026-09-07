@@ -713,7 +713,7 @@ document.querySelectorAll(".character-option-checkbox").forEach((checkbox) => {
   });
 });
 
-/* Thanh trượt: Đồng bộ số ngay lập tức, chờ 2 giây sau khi ngừng trượt mới sinh mã */
+/* Thanh trượt: Đồng bộ số tức thì, chờ 1 giây sau khi ngừng trượt mới sinh mã */
 const lengthSliderInput = getElement("passwordLengthSlider");
 const lengthNumberInput = getElement("passwordLengthInput");
 
@@ -727,7 +727,7 @@ lengthSliderInput.addEventListener("input", (event) => {
 
   sliderDebounceTimer = setTimeout(() => {
     generateNewPassword();
-  }, 2000);
+  }, 1000);
 });
 
 /* Ô nhập số: Chỉ chuẩn hoá và sinh mã khi kết thúc nhập (change, blur, Enter) */
