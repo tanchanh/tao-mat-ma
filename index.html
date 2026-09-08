@@ -161,6 +161,10 @@ h3 {
   white-space: nowrap;
 }
 
+.password-text-input.is-long {
+  text-align: left;
+}
+
 .strength-section {
   display: grid;
   gap: 0.75rem;
@@ -250,25 +254,23 @@ h3 {
 .length-control-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
-.length-inputs-row {
+.length-header-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  width: 100%;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-.length-range-slider {
-  flex: 1;
-  height: 0.6rem;
-  accent-color: var(--color-blue-primary);
+.length-header-row label {
   cursor: pointer;
+  user-select: none;
 }
 
 .length-input-number {
-  width: 5rem;
+  width: 5.5rem;
   min-height: 2.6rem;
   padding: 0.25rem 0.5rem;
   border: 2px solid var(--color-bg-darkest);
@@ -283,6 +285,18 @@ h3 {
 
 .length-input-number:focus {
   border-color: var(--color-blue-primary);
+}
+
+.length-slider-row {
+  width: 100%;
+}
+
+.length-range-slider {
+  width: 100%;
+  height: 0.7rem;
+  accent-color: var(--color-blue-primary);
+  cursor: pointer;
+  display: block;
 }
 
 .checkbox-group {
@@ -348,7 +362,7 @@ h3 {
 
 <!-- KHUNG MẬT MÃ CUỘN NGANG NỘI BỘ -->
 <section class="password-section">
-  <div class="password-display-wrapper">
+  <div id="passwordScrollWrapper" class="password-display-wrapper">
     <input id="mainPasswordInput" class="password-text-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nhập hoặc tạo mật mã..." aria-label="Mật mã">
   </div>
 </section>
@@ -391,10 +405,13 @@ h3 {
     <h3>Lựa Chọn Tạo Mã</h3>
 
     <div class="length-control-container">
-      <label for="passwordLengthSlider">Độ dài ký tự (4 - 128):</label>
-      <div class="length-inputs-row">
-        <input id="passwordLengthSlider" class="length-range-slider" type="range" min="4" max="128" value="16" aria-label="Thanh trượt độ dài">
+      <div class="length-header-row">
+        <label for="passwordLengthInput">Độ dài ký tự (4 - 128):</label>
         <input id="passwordLengthInput" class="length-input-number" type="number" min="4" max="128" value="16" inputmode="numeric" aria-label="Ô nhập độ dài">
+      </div>
+
+      <div class="length-slider-row">
+        <input id="passwordLengthSlider" class="length-range-slider" type="range" min="4" max="128" value="16" aria-label="Thanh trượt độ dài">
       </div>
     </div>
 
@@ -455,6 +472,13 @@ let sliderDebounceTimer = null;
 
 const getElement = (id) => document.getElementById(id);
 
+function clearSliderDebounce() {
+  if (sliderDebounceTimer) {
+    clearTimeout(sliderDebounceTimer);
+    sliderDebounceTimer = null;
+  }
+}
+
 function getSecureRandomIndex(maxLimit) {
   if (maxLimit <= 0) return 0;
   const maxUint32 = 0x100000000;
@@ -498,6 +522,7 @@ function syncPasswordLength(sourceValue) {
 }
 
 function generateNewPassword() {
+  clearSliderDebounce();
   try {
     const desiredLength = syncPasswordLength(getElement("passwordLengthInput").value);
 
@@ -550,9 +575,22 @@ function generateNewPassword() {
       generatedArray.push(getRandomCharacter(combinedPool));
     }
 
-    const finalPassword = shuffleArray(generatedArray).join("");
+    /* Đảm bảo độ dài chính xác bằng slice cắt đúng desiredLength */
+    const finalPassword = shuffleArray(generatedArray).slice(0, desiredLength).join("");
     const mainInput = getElement("mainPasswordInput");
     mainInput.value = finalPassword;
+
+    /* Xử lý giao diện: Nếu chuỗi dài thì căn trái và cuộn về đầu chuỗi */
+    if (finalPassword.length > 24) {
+      mainInput.classList.add("is-long");
+    } else {
+      mainInput.classList.remove("is-long");
+    }
+
+    const scrollWrapper = getElement("passwordScrollWrapper");
+    if (scrollWrapper) {
+      scrollWrapper.scrollLeft = 0;
+    }
 
     clearCopyState();
     evaluatePasswordStrength(finalPassword);
@@ -579,7 +617,8 @@ function evaluatePasswordStrength(passwordText) {
   const hasUppercase = /[A-Z]/.test(passwordText);
   const hasLowercase = /[a-z]/.test(passwordText);
   const hasNumbers = /[0-9]/.test(passwordText);
-  const hasSymbols = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(passwordText);
+  /* Kiểm tra ký hiệu tổng quát an toàn: Không phải chữ và không phải số */
+  const hasSymbols = /[^A-Za-z0-9]/.test(passwordText);
 
   getElement("valueLengthCounter").textContent = passwordLength.toLocaleString("vi-VN");
 
@@ -694,7 +733,7 @@ async function copyToClipboard(textToCopy, triggerButton) {
   }
 }
 
-/* Tự động tạo lại mã khi tích/bỏ chọn checkbox */
+/* Tự động tạo lại mã khi tích/bỏ chọn checkbox (Đồng thời hủy bộ đếm trễ của slider) */
 document.querySelectorAll(".character-option-checkbox").forEach((checkbox) => {
   checkbox.addEventListener("change", function() {
     const mainCheckboxes = [
@@ -709,34 +748,40 @@ document.querySelectorAll(".character-option-checkbox").forEach((checkbox) => {
       this.checked = true;
     }
 
+    clearSliderDebounce();
     generateNewPassword();
   });
 });
 
-/* Thanh trượt: Đồng bộ số tức thì, chờ 1 giây sau khi ngừng trượt mới sinh mã */
+/* Thanh trượt: Đồng bộ số ngay, chờ 1s sau khi dừng kéo */
 const lengthSliderInput = getElement("passwordLengthSlider");
 const lengthNumberInput = getElement("passwordLengthInput");
 
 lengthSliderInput.addEventListener("input", (event) => {
   const currentVal = event.target.value;
-  getElement("passwordLengthInput").value = currentVal;
+  lengthNumberInput.value = currentVal;
 
-  if (sliderDebounceTimer) {
-    clearTimeout(sliderDebounceTimer);
-  }
-
+  clearSliderDebounce();
   sliderDebounceTimer = setTimeout(() => {
     generateNewPassword();
   }, 1000);
 });
 
-/* Ô nhập số: Chỉ chuẩn hoá và sinh mã khi kết thúc nhập (change, blur, Enter) */
+/* Bắt thêm sự kiện chốt nhả tay trên màn hình cảm ứng */
+lengthSliderInput.addEventListener("change", () => {
+  clearSliderDebounce();
+  generateNewPassword();
+});
+
+/* Ô nhập số: Chuẩn hoá và sinh mã ngay khi hoàn tất nhập */
 lengthNumberInput.addEventListener("change", () => {
+  clearSliderDebounce();
   syncPasswordLength(lengthNumberInput.value);
   generateNewPassword();
 });
 
 lengthNumberInput.addEventListener("blur", () => {
+  clearSliderDebounce();
   syncPasswordLength(lengthNumberInput.value);
   generateNewPassword();
 });
@@ -744,6 +789,7 @@ lengthNumberInput.addEventListener("blur", () => {
 lengthNumberInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
+    clearSliderDebounce();
     syncPasswordLength(lengthNumberInput.value);
     generateNewPassword();
   }
@@ -756,14 +802,18 @@ lengthNumberInput.addEventListener("wheel", (event) => {
 /* Sự kiện trên ô mật mã chính */
 getElement("mainPasswordInput").addEventListener("input", (event) => {
   clearCopyState();
-  evaluatePasswordStrength(event.target.value);
+  const val = event.target.value;
+  if (val.length > 24) {
+    event.target.classList.add("is-long");
+  } else {
+    event.target.classList.remove("is-long");
+  }
+  evaluatePasswordStrength(val);
 });
 
 /* Nút tạo mã và nút sao chép */
 getElement("buttonCreatePassword").addEventListener("click", () => {
-  if (sliderDebounceTimer) {
-    clearTimeout(sliderDebounceTimer);
-  }
+  clearSliderDebounce();
   generateNewPassword();
 });
 
