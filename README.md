@@ -1,68 +1,60 @@
-# Tạo Và Đánh Giá Mật Mã (Password Generator & Evaluator)
-
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Offline Ready](https://img.shields.io/badge/Offline-Ready-0d9488?style=for-the-badge)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
-
-Ứng dụng web Single-Page tinh gọn, bảo mật cao giúp **sinh mật mã ngẫu nhiên chuẩn mã hoá** và **đánh giá độ mạnh của mật mã theo thời gian thực** (Real-time Live Validation).
-
-Được xây dựng hoàn toàn bằng **HTML/CSS/JavaScript thuần (Vanilla)** trong một tập tin duy nhất, không sử dụng thư viện ngoài, không tải phông chữ từ xa và có thể khởi chạy tức thì offline 100%.
+# HƯỚNG DẪN SỬ DỤNG PHẦN MỀM TẠO MẬT MÃ
+**Tác giả:** Dương Tấn Chánh
 
 ---
 
-## 🌟 Tính Năng Nổi Bật
+## 1. Giới Thiệu Chung
+Phần mềm **TẠO MẬT MÃ** là công cụ giúp bạn tạo ra những mật mã ngẫu nhiên có độ bảo mật cao nhất, bảo vệ an toàn cho tài khoản mạng xã hội, email, tài khoản ngân hàng và công việc hàng ngày của bạn. 
 
-- **Kiến trúc Hợp nhất (All-in-One UX):** Không chia tab phức tạp. Ô mật mã trung tâm đóng vai trò kép: vừa là nơi hiển thị kết quả sinh mã, vừa cho phép người dùng click vào gõ tay, dán hoặc tinh chỉnh mật khẩu cá nhân.
-- **Chuẩn mật mã ngẫu nhiên (CSPRNG):** Sử dụng `crypto.getRandomValues()` kết hợp giải thuật **Rejection Sampling** để triệt tiêu hoàn toàn sai số Modulo Bias, đảm bảo tính ngẫu nhiên tuyệt đối theo chuẩn bảo mật.
-- **Xáo trộn vị trí đồng đều:** Áp dụng thuật toán **Fisher-Yates Shuffle** $O(n)$ giúp các nhóm ký tự bắt buộc không bị cố định ở đầu chuỗi.
-- **Đánh giá độ mạnh thông minh:** Chấm điểm dựa trên sự kết hợp giữa độ dài chuỗi và độ đa dạng nhóm ký tự. Hỗ trợ tốt cho các cụm mật khẩu dài (Passphrase), ngăn chặn chuỗi lặp đơn điệu đạt điểm ảo.
-- **Cơ chế sao chép đa nền tảng:** Tích hợp đồng thời Modern Clipboard API và phương thức dự phòng `execCommand('copy')` giúp nút Sao chép hoạt động trơn tru ngay cả trên môi trường `file://` nội bộ.
-- **Trải nghiệm hiển thị cao cấp:**
-  - Phông chữ mật mã to **`2rem`** chuẩn Monospace, căn giữa hoàn hảo.
-  - Hệ thống biểu tượng vector thuần **`<svg>`** sắc nét, chống giật/nhấp nháy giao diện.
-  - Bố cục co giãn linh hoạt (Mobile-first Responsive), nút bấm đạt chuẩn cảm ứng ($\ge 44\text{px}$).
+Bên cạnh việc tạo mật mã mới, phần mềm còn có tính năng kiểm tra xem mật mã bạn đang dùng là **Mạnh** hay **Yếu**, và cảnh báo ngay nếu mật mã đó dễ bị kẻ gian đoán trúng.
 
 ---
 
-## 📐 Quy Tắc & Giải Thuật Kỹ Thuật
+## 2. Các Tính Năng Chính & Cách Sử Dụng
 
-### 1. Quy tắc sinh mật mã (Password Generation)
-* **Độ dài tuỳ chọn:** Từ `4` đến `128` ký tự (mặc định: `16`).
-* **4 nhóm ký tự hỗ trợ:**
-  * Chữ hoa (`A-Z` - 26 ký tự)
-  * Chữ thường (`a-z` - 26 ký tự)
-  * Chữ số (`0-9` - 10 ký tự)
-  * Ký hiệu đặc biệt (`!@#$%^&*()-_=+[]{};:,.?` - 24 ký tự)
-* **Ràng buộc an toàn:** Luôn đảm bảo mỗi nhóm được chọn xuất hiện ít nhất 1 ký tự trong chuỗi kết quả. Tự động khoá chống bỏ chọn toàn bộ nhóm ký tự.
-
-### 2. Tiêu chí đánh giá độ mạnh (Password Strength)
-Gọi $L$ là độ dài chuỗi và $V$ là số nhóm ký tự có mặt ($0 \le V \le 4$):
-
-| Mức độ | Tỉ lệ | Điều kiện áp dụng |
-| :--- | :---: | :--- |
-| **Rất mạnh** | `100%` | ($L \ge 20$ VÀ $V \ge 2$) **HOẶC** ($L \ge 16$ VÀ $V = 4$) |
-| **Mạnh** | `75%` | ($L \ge 14$ VÀ $V \ge 3$) **HOẶC** ($L \ge 12$ VÀ $V = 4$) |
-| **Trung bình** | `50%` | $L \ge 10$ VÀ $V \ge 2$ |
-| **Yếu** | `25%` | Các trường hợp còn lại ($L > 0$) |
-| **Trống** | `0%` | Ô mật mã rỗng ($L = 0$) |
+### 🔹 Cách Tạo Mật Mã Mới (Chỉ cần 1 chạm)
+1. Mở phần mềm lên, hệ thống sẽ tự động tạo sẵn cho bạn một mật mã an toàn dài 16 ký tự.
+2. Nếu muốn đổi sang mật mã khác, bạn chỉ cần bấm nút **"Tạo Mã"** (màu xanh dương).
+3. Khi ưng ý, bấm nút **"Sao Chép"** để lưu mật mã vào bộ nhớ tạm. Nút sẽ chuyển sang chữ **"Đã Chép!"** màu xanh lá, lúc này bạn chỉ cần dán (`Ctrl + V` hoặc chọn `Dán`) vào nơi cần đổi mật khẩu.
 
 ---
 
-## 🛠️ Công Nghệ Xây Dựng
+### 🔹 Tùy Chỉnh Mật Mã Theo Ý Muốn
+Bạn có thể dễ dàng thay đổi độ dài và các thành phần của mật mã tại khu vực **Lựa Chọn Tạo Mã**:
 
-* **Ngôn ngữ:** Vanilla HTML5, Modern CSS, Vanilla JavaScript (ES6+).
-* **CSS Architecture:** Flexbox, CSS Grid, CSS Custom Properties (`:root` variables), tối giản bảng màu 4 màu chủ đạo.
-* **Security & Web APIs:** Web Crypto API (`crypto.getRandomValues`), Async Clipboard API.
-* **Zero Dependency:** 100% mã nguồn tự thân, kích thước siêu nhẹ (~15KB).
+* **Độ dài ký tự (từ 4 đến 100):**
+  * **Dùng thanh trượt:** Kéo chấm tròn sang trái để giảm độ dài, kéo sang phải để tăng độ dài. Khi bạn buông tay ra, phần mềm sẽ lập tức tạo ngay mật mã có độ dài tương ứng.
+  * **Nhập số trực tiếp:** Bạn cũng có thể bấm vào ô số và gõ con số mình muốn rồi nhấn phím `Enter`.
+* **Chọn loại ký tự:** Đánh dấu chọn hoặc bỏ chọn theo nhu cầu:
+  * **Chữ hoa (A-Z):** Thêm chữ in hoa.
+  * **Chữ thường (a-z):** Thêm chữ in thường.
+  * **Chữ số (0-9):** Thêm số.
+  * **Ký hiệu đặc biệt:** Thêm các ký tự như `!@#$%^&*...` giúp mật mã an toàn hơn rất nhiều.
+  * **Loại trừ ký tự dễ nhầm:** Giúp bạn tránh bị nhầm lẫn khi đọc hoặc ghi chép bằng mắt (ví dụ: số `0` với chữ `O`, chữ `l` thường với số `1` hoặc chữ `I` in hoa).
 
 ---
 
-## 👤 Tác Giả
+### 🔹 Kiểm Tra Độ An Toàn Của Mật Mã Đang Có
+Bạn có thể tự gõ hoặc dán bất kỳ mật khẩu nào vào ô hiển thị mật mã để kiểm tra:
 
-* **Tác giả:** **Dương Tấn Chánh**
-* **Chuyên mục:** Ứng dụng web Single-Page / Lập trình Front-end hiệu năng cao.
-## 📄 Giấy Phép (License)
+* **Thanh đo độ mạnh:** Sẽ hiển thị 4 mức độ rõ ràng:
+  * 🔴 **Mật Mã YẾU:** Rất dễ bị bẻ khóa, không nên dùng.
+  * 🟠 **Mật Mã TRUNG BÌNH:** Tương đối ổn, nhưng vẫn có rủi ro.
+  * 🟢 **Mật Mã MẠNH:** An toàn cho các tài khoản thông thường.
+  * 🟢 **Mật Mã RẤT MẠNH:** An toàn tuyệt đối, khuyên dùng cho email chính và tài khoản quan trọng.
+* **Danh sách tiêu chuẩn (Dấu tích xanh/đỏ):** Giúp bạn biết mật mã đã đủ dài chưa, đã có đủ chữ hoa, chữ thường, chữ số và ký hiệu hay chưa.
+* **Cảnh báo thông minh (Màu vàng cam):** Nếu bạn vô tình đặt mật khẩu có chứa các thông tin dễ đoán như:
+  * Chứa từ ngữ quen thuộc (ví dụ: `password`, `matkhau`, `admin`, `vietnam`...).
+  * Chứa năm sinh hoặc ngày tháng (ví dụ: `1995`, `2000`, `2024`...).
+  * Chứa chuỗi số hoặc chữ cái liên tiếp (ví dụ: `1234`, `abcd`...).
+  * Lướt phím trên bàn phím (ví dụ: `qwerty`, `asdfgh`...).
+  * Lặp lại các ký tự giống nhau liên tiếp (ví dụ: `aaaa`, `1111`...).
+  👉 Phần mềm sẽ lập tức hiện dòng cảnh báo để bạn nhận biết và đổi lại ngay.
 
-Dự án được phân phối dưới giấy phép **MIT License**. Bạn được toàn quyền sử dụng, chỉnh sửa và tích hợp vào các dự án cá nhân hoặc thương mại.
+---
+
+## 3. Lời Khuyên Để Luôn Giữ An Toàn
+1. **Độ dài là quan trọng nhất:** Một mật mã an toàn nên có độ dài **từ 16 ký tự trở lên**.
+2. **Không dùng chung mật khẩu:** Không nên dùng cùng một mật khẩu cho nhiều dịch vụ khác nhau. Nếu một nơi bị lộ, các tài khoản khác của bạn sẽ gặp nguy hiểm.
+3. **Tránh thông tin cá nhân:** Tuyệt đối không lấy ngày sinh, số điện thoại, biển số xe hay tên người thân để đặt mật khẩu.
+4. **Sử dụng phần mềm quản lý mật khẩu:** Nếu khó nhớ các mật mã phức tạp, bạn hãy dùng các trình quản lý mật khẩu uy tín để lưu lại an toàn.
