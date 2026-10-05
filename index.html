@@ -20,6 +20,7 @@
   --color-green-dark: #009911;
   --color-orange: #EE6000;
   --color-red: #FF2040;
+  --color-warning-text: #FFB703;
   --color-bg-darkest: #000000;
   --color-bg-body: #1A1A1A;
   --color-bg-card: #262626;
@@ -82,7 +83,7 @@ h3 {
 
 .btn-action {
   min-height: 3rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   border: 2px solid var(--color-bg-card);
   border-radius: 0.5rem;
   font-size: 1.1rem;
@@ -93,7 +94,10 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-action:active {
@@ -150,6 +154,11 @@ h3 {
   line-height: 1.35;
   text-align: center;
   direction: ltr;
+  scroll-behavior: smooth;
+}
+
+.password-text-input:focus {
+  border-color: var(--color-blue-primary);
 }
 
 .password-text-input.is-long {
@@ -177,6 +186,32 @@ h3 {
   justify-content: center;
 }
 
+/* Hiệu ứng trượt êm chống giật khung hình (CLS) */
+.strength-warning-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease-out;
+}
+
+.strength-warning-wrapper.is-visible {
+  grid-template-rows: 1fr;
+}
+
+.strength-warning-inner {
+  overflow: hidden;
+}
+
+.strength-warning-display {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--color-orange);
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-darkest);
+  color: var(--color-warning-text);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
 .strength-meter-track {
   width: 100%;
   height: 0.8rem;
@@ -187,10 +222,13 @@ h3 {
 }
 
 .strength-meter-bar {
-  width: 0;
+  width: 100%;
   height: 100%;
   background-color: var(--color-red);
-  transition: width 0.3s ease, background-color 0.3s ease;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+  will-change: transform;
 }
 
 .criteria-checklist {
@@ -353,12 +391,18 @@ h3 {
 
 <!-- KHUNG MẬT MÃ 100% BỀ NGANG -->
 <section class="password-section">
-  <input id="mainPasswordInput" class="password-text-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nhập hoặc tạo mật mã..." aria-label="Mật mã">
+  <input id="mainPasswordInput" class="password-text-input" type="text" maxlength="128" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" placeholder="Nhập hoặc tạo mật mã..." aria-label="Mật mã">
 </section>
 
-<!-- KHU VỰC ĐÁNH GIÁ ĐỘ MẠNH -->
+<!-- KHU VỰC ĐÁNH GIÁ ĐỘ MẠNH VÀ TRỢ NĂNG ARIA -->
 <section class="strength-section">
-  <div id="strengthStatusText" class="strength-status-display">Chưa có mật mã</div>
+  <div id="strengthStatusText" class="strength-status-display" aria-live="polite" aria-atomic="true">Chưa có mật mã</div>
+
+  <div id="strengthWarningWrapper" class="strength-warning-wrapper">
+    <div class="strength-warning-inner">
+      <div id="strengthWarningText" class="strength-warning-display" aria-live="polite"></div>
+    </div>
+  </div>
 
   <div class="strength-meter-track">
     <div id="strengthMeterFill" class="strength-meter-bar"></div>
@@ -423,7 +467,7 @@ h3 {
       </label>
       <label class="checkbox-label">
         <input id="optionExcludeAmbiguous" class="character-option-checkbox" type="checkbox">
-        Loại trừ ký tự dễ nhầm (0, O, l, I, 1...)
+        Loại trừ ký tự dễ nhầm (0, O, o, l, I, 1...)
       </label>
     </div>
   </div>
@@ -431,7 +475,7 @@ h3 {
 
 <div class="advice-card">
   💡 <strong>Lời khuyên bảo mật:</strong>
-  Không nên sử dụng tên riêng, ngày sinh, số điện thoại, chuỗi số liên tiếp hoặc các từ ngữ thông dụng trong từ điển. Một mật mã dài trên 16 ký tự hoặc một cụm mật mã nhiều từ ngẫu nhiên sẽ mang lại mức độ an toàn cao nhất.
+  Không nên sử dụng tên riêng, ngày sinh, số điện thoại, chuỗi phím liền kề hoặc các từ ngữ thông dụng trong từ điển. Một mật mã dài trên 16 ký tự phân tán ngẫu nhiên sẽ mang lại mức độ an toàn cao nhất.
 </div>
 
 <script>
@@ -442,7 +486,23 @@ const CHARACTER_SETS = {
   symbols: "!@#$%^&*()-_=+[]{};:,.?"
 };
 
-const AMBIGUOUS_CHARACTERS = /[O0Il1|`'"~,;:.]/g;
+/* Bảng ký tự dễ nhầm chuẩn NIST/OWASP mở rộng */
+const AMBIGUOUS_CHARACTERS = /[O0oIl1|/\\`'"~,:;.]/g;
+
+const KEYBOARD_PATTERNS = [
+  "qwertyuiop",
+  "asdfghjkl",
+  "zxcvbnm",
+  "1234567890",
+  "!@#$%^&*()_+"
+];
+
+const COMMON_DICTIONARY_WORDS = [
+  "password", "passcode", "matkhau", "admin", "administrator", "root", "user",
+  "login", "welcome", "iloveyou", "anhyeuem", "emyeuanh", "vietnam", "saigon",
+  "hanoi", "danang", "dragon", "master", "football", "chelsea", "arsenal",
+  "barcelona", "superman", "batman", "internet", "security", "chucmung"
+];
 
 const SVG_CHECK = '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
 const SVG_CROSS = '<svg class="svg-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
@@ -450,32 +510,52 @@ const SVG_COPY_DEFAULT = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"
 const SVG_COPY_SUCCESS = '<polyline points="20 6 9 17 4 12"/>';
 
 const STRENGTH_CONFIGS = {
-  weak: { label: "Mật Mã YẾU", percent: 25, color: "var(--color-red)" },
-  medium: { label: "Mật Mã TRUNG BÌNH", percent: 50, color: "var(--color-orange)" },
-  strong: { label: "Mật Mã MẠNH", percent: 75, color: "var(--color-green-dark)" },
-  veryStrong: { label: "Mật Mã RẤT MẠNH", percent: 100, color: "var(--color-green-bright)" }
+  weak: { label: "Mật Mã YẾU", ratio: 0.25, color: "var(--color-red)" },
+  medium: { label: "Mật Mã TRUNG BÌNH", ratio: 0.50, color: "var(--color-orange)" },
+  strong: { label: "Mật Mã MẠNH", ratio: 0.75, color: "var(--color-green-dark)" },
+  veryStrong: { label: "Mật Mã RẤT MẠNH", ratio: 1.00, color: "var(--color-green-bright)" }
 };
 
 let copyTimerTracker = null;
-let sliderDebounceTimer = null;
+let isCopyingInProgress = false;
+
+/* BỘ ĐỆM ENTROPY TĨNH (STATIC CSPRNG BUFFER) */
+const ENTROPY_BUFFER_SIZE = 256;
+const entropyPool = new Uint32Array(ENTROPY_BUFFER_SIZE);
+let entropyPoolPointer = ENTROPY_BUFFER_SIZE;
 
 const getElement = (id) => document.getElementById(id);
 
-function clearSliderDebounce() {
-  if (sliderDebounceTimer) {
-    clearTimeout(sliderDebounceTimer);
-    sliderDebounceTimer = null;
+function getNextEntropyWord() {
+  if (entropyPoolPointer >= ENTROPY_BUFFER_SIZE) {
+    crypto.getRandomValues(entropyPool);
+    entropyPoolPointer = 0;
   }
+  const randomValue = entropyPool[entropyPoolPointer];
+  entropyPoolPointer++;
+  return randomValue;
 }
 
+/**
+ * Rejection Sampling không thiên vị, có chốt chặn số vòng lặp an toàn
+ */
 function getSecureRandomIndex(maxLimit) {
-  if (maxLimit <= 0) return 0;
-  const randomBuffer = new Uint32Array(1);
-  crypto.getRandomValues(randomBuffer);
-  return randomBuffer[0] % maxLimit;
+  if (maxLimit <= 1) return 0;
+  const maxValidThreshold = Math.floor(4294967296 / maxLimit) * maxLimit;
+  let safetyLoopCount = 0;
+
+  while (safetyLoopCount < 10000) {
+    safetyLoopCount++;
+    const candidate = getNextEntropyWord();
+    if (candidate < maxValidThreshold) {
+      return candidate % maxLimit;
+    }
+  }
+  return candidate % maxLimit;
 }
 
 function getRandomCharacter(sourceString) {
+  if (!sourceString || sourceString.length === 0) return "";
   const selectedIndex = getSecureRandomIndex(sourceString.length);
   return sourceString.charAt(selectedIndex);
 }
@@ -491,28 +571,28 @@ function shuffleArray(targetArray) {
   return result;
 }
 
-function syncPasswordLength(sourceValue) {
-  let parsedValue = parseInt(sourceValue, 10);
-  if (isNaN(parsedValue) || parsedValue < 4) {
-    parsedValue = 4;
-  } else if (parsedValue > 100) {
-    parsedValue = 100;
-  }
+function clampLengthValue(value) {
+  const parsed = Number(value);
+  if (isNaN(parsed) || parsed < 4) return 4;
+  if (parsed > 100) return 100;
+  return (parsed | 0);
+}
 
-  getElement("passwordLengthInput").value = parsedValue;
-  getElement("passwordLengthSlider").value = parsedValue;
-  return parsedValue;
+function syncPasswordLength(sourceValue) {
+  const safeLength = clampLengthValue(sourceValue);
+  getElement("passwordLengthInput").value = safeLength;
+  getElement("passwordLengthSlider").value = safeLength;
+  return safeLength;
 }
 
 function generateNewPassword() {
-  clearSliderDebounce();
   try {
     const desiredLength = syncPasswordLength(getElement("passwordLengthInput").value);
 
-    const activeUppercase = getElement("optionUppercase").checked;
-    const activeLowercase = getElement("optionLowercase").checked;
-    const activeNumbers = getElement("optionNumbers").checked;
-    const activeSymbols = getElement("optionSymbols").checked;
+    let activeUppercase = getElement("optionUppercase").checked;
+    let activeLowercase = getElement("optionLowercase").checked;
+    let activeNumbers = getElement("optionNumbers").checked;
+    let activeSymbols = getElement("optionSymbols").checked;
     const excludeAmbiguous = getElement("optionExcludeAmbiguous").checked;
 
     let poolUppercase = CHARACTER_SETS.uppercase;
@@ -547,18 +627,40 @@ function generateNewPassword() {
       mandatoryCharacters.push(getRandomCharacter(poolSymbols));
     }
 
-    if (mandatoryCharacters.length === 0) {
+    /* Fallback Anchor: Nếu các tập bị lọc rỗng hoàn toàn */
+    if (combinedPool.length === 0) {
       getElement("optionLowercase").checked = true;
-      combinedPool += poolLowercase;
+      poolLowercase = "abcdefghjkmnpqrstuvwxyz";
+      combinedPool = poolLowercase;
       mandatoryCharacters.push(getRandomCharacter(poolLowercase));
     }
 
-    const generatedArray = mandatoryCharacters.slice();
-    while (generatedArray.length < desiredLength) {
-      generatedArray.push(getRandomCharacter(combinedPool));
+    let finalPassword = "";
+    let attemptsCount = 0;
+
+    /* Vòng lặp Quality Guard đảm bảo mã sinh ra luôn sạch sẽ */
+    while (attemptsCount < 4) {
+      attemptsCount++;
+      const generatedArray = [];
+      const initialPool = mandatoryCharacters.slice(0, desiredLength);
+
+      for (const char of initialPool) {
+        generatedArray.push(char);
+      }
+
+      while (generatedArray.length < desiredLength) {
+        generatedArray.push(getRandomCharacter(combinedPool));
+      }
+
+      const candidatePassword = shuffleArray(generatedArray).join("");
+      const detectedFaults = analyzePasswordWeaknesses(candidatePassword, true);
+
+      if (detectedFaults.length === 0 || attemptsCount === 4) {
+        finalPassword = candidatePassword;
+        break;
+      }
     }
 
-    const finalPassword = shuffleArray(generatedArray).slice(0, desiredLength).join("");
     const mainInput = getElement("mainPasswordInput");
     mainInput.value = finalPassword;
 
@@ -568,10 +670,13 @@ function generateNewPassword() {
       mainInput.classList.remove("is-long");
     }
 
-    /* Đưa góc nhìn hiển thị về ký tự đầu tiên */
-    if (typeof mainInput.setSelectionRange === "function") {
-      mainInput.setSelectionRange(0, 0);
-    }
+    /* Đưa con trỏ và cuộn về vị trí đầu qua requestAnimationFrame chống Layout Thrashing */
+    requestAnimationFrame(() => {
+      if (typeof mainInput.setSelectionRange === "function") {
+        mainInput.setSelectionRange(0, 0);
+      }
+      mainInput.scrollLeft = 0;
+    });
 
     clearCopyState();
     evaluatePasswordStrength(finalPassword);
@@ -587,18 +692,137 @@ function updateCriteriaBadge(elementId, isValid) {
   badge.classList.toggle("is-invalid", !isValid);
 }
 
-function evaluatePasswordStrength(passwordText) {
-  const passwordLength = passwordText.length;
+/**
+ * Heuristic tuyến tính O(n), chống ReDoS và False Positive
+ */
+function analyzePasswordWeaknesses(passwordText, isMachineGenerated = false) {
+  const warnings = [];
+  const charArray = Array.from(passwordText);
+  const totalLength = charArray.length;
+
+  if (totalLength < 4) return warnings;
+
+  const lowerText = passwordText.toLowerCase();
+
+  /* 1. Lặp 3 ký tự giống nhau liên tiếp */
+  for (let i = 0; i < totalLength - 2; i++) {
+    if (charArray[i] === charArray[i + 1] && charArray[i] === charArray[i + 2]) {
+      warnings.push("Ký tự giống nhau lặp liên tiếp");
+      break;
+    }
+  }
+
+  /* 2. Tỷ lệ ký tự phân biệt thấp (chỉ phạt nặng khi không phải chế độ chỉ tạo số) */
+  const uniqueCharsCount = new Set(charArray).size;
+  if (totalLength >= 8 && (uniqueCharsCount / totalLength) < 0.4 && (!isMachineGenerated || totalLength < 40)) {
+    warnings.push("Quá ít ký tự phân biệt");
+  }
+
+  /* 3. Chuỗi tăng/giảm tuần tự 4 ký tự trở lên */
+  let sequentialLength = 1;
+  let hasSequentialPattern = false;
+  for (let i = 0; i < totalLength - 1; i++) {
+    const diff = charArray[i + 1].charCodeAt(0) - charArray[i].charCodeAt(0);
+    if (diff === 1 || diff === -1) {
+      sequentialLength++;
+      if (sequentialLength >= 4) {
+        hasSequentialPattern = true;
+        break;
+      }
+    } else {
+      sequentialLength = 1;
+    }
+  }
+  if (hasSequentialPattern) {
+    warnings.push("Chuỗi ký tự/số tuần tự liên tiếp");
+  }
+
+  /* 4. Lướt ngón tay trên bàn phím QWERTY (tối thiểu 4 phím liền kề) */
+  let keyboardDetected = false;
+  for (const pattern of KEYBOARD_PATTERNS) {
+    const reversedPattern = pattern.split("").reverse().join("");
+    for (let len = 4; len <= 5; len++) {
+      for (let start = 0; start <= pattern.length - len; start++) {
+        const sub = pattern.substr(start, len);
+        const subRev = reversedPattern.substr(start, len);
+        if (lowerText.includes(sub) || lowerText.includes(subRev)) {
+          keyboardDetected = true;
+          break;
+        }
+      }
+      if (keyboardDetected) break;
+    }
+    if (keyboardDetected) break;
+  }
+  if (keyboardDetected) {
+    warnings.push("Chuỗi phím liền kề trên bàn phím");
+  }
+
+  /* 5. Quét lặp cụm mẫu tuyến tính O(n) */
+  let repeatingBlockFound = false;
+  for (let blockSize = 2; blockSize <= 5; blockSize++) {
+    if (totalLength >= blockSize * 2) {
+      for (let i = 0; i <= totalLength - (blockSize * 2); i++) {
+        const blockA = passwordText.substr(i, blockSize);
+        const blockB = passwordText.substr(i + blockSize, blockSize);
+        if (blockA === blockB && (isMachineGenerated || totalLength < 24)) {
+          repeatingBlockFound = true;
+          break;
+        }
+      }
+    }
+    if (repeatingBlockFound) break;
+  }
+  if (repeatingBlockFound) {
+    warnings.push("Mẫu cụm ký tự bị lặp lại");
+  }
+
+  /* 6. Năm sinh / ngày tháng */
+  const yearPatternMatch = lowerText.match(/(19[5-9]\d|20[0-3]\d)/);
+  if (yearPatternMatch) {
+    const matchIndex = yearPatternMatch.index;
+    if (matchIndex === 0 || matchIndex + 4 === totalLength || isMachineGenerated === false) {
+      warnings.push("Chứa năm hoặc ngày tháng dễ đoán");
+    }
+  }
+
+  /* 7. Từ điển thông dụng kết hợp giải mã Leet Speak */
+  const normalizedLeet = lowerText
+    .replace(/@/g, "a")
+    .replace(/0/g, "o")
+    .replace(/1/g, "i")
+    .replace(/3/g, "e")
+    .replace(/\$/g, "s");
+
+  for (const word of COMMON_DICTIONARY_WORDS) {
+    if (normalizedLeet.includes(word)) {
+      warnings.push(`Chứa từ thông dụng ("${word}")`);
+      break;
+    }
+  }
+
+  return warnings;
+}
+
+function evaluatePasswordStrength(rawPasswordText) {
+  /* Chuẩn hóa NFC và lọc sạch các ký tự điều khiển ẩn Unicode Zero-Width */
+  const sanitizedText = (rawPasswordText || "")
+    .normalize("NFC")
+    .replace(/[\u200B-\u200D\uFEFF\u202A-\u202E\r\n\t\v\f]/g, "");
+
+  const charArray = Array.from(sanitizedText);
+  const passwordLength = charArray.length;
 
   if (passwordLength === 0) {
     resetStrengthView();
     return;
   }
 
-  const hasUppercase = /[A-Z]/.test(passwordText);
-  const hasLowercase = /[a-z]/.test(passwordText);
-  const hasNumbers = /[0-9]/.test(passwordText);
-  const hasSymbols = /[^A-Za-z0-9\s]/.test(passwordText);
+  /* Unicode Property Escapes: Hỗ trợ tiếng Việt đầy đủ */
+  const hasUppercase = /\p{Lu}/u.test(sanitizedText);
+  const hasLowercase = /\p{Ll}/u.test(sanitizedText);
+  const hasNumbers = /[0-9]/.test(sanitizedText);
+  const hasSymbols = /[^\p{L}\p{N}\s]/u.test(sanitizedText);
 
   getElement("valueLengthCounter").textContent = passwordLength.toLocaleString("vi-VN");
 
@@ -614,20 +838,43 @@ function evaluatePasswordStrength(passwordText) {
   if (hasNumbers) varietyCount++;
   if (hasSymbols) varietyCount++;
 
-  let strengthConfig = STRENGTH_CONFIGS.weak;
+  const weaknesses = analyzePasswordWeaknesses(sanitizedText, false);
+  const warningWrapper = getElement("strengthWarningWrapper");
+  const warningText = getElement("strengthWarningText");
 
-  if ((passwordLength >= 20 && varietyCount >= 2) || (passwordLength >= 16 && varietyCount >= 4)) {
-    strengthConfig = STRENGTH_CONFIGS.veryStrong;
-  } else if ((passwordLength >= 16 && varietyCount >= 2) || (passwordLength >= 14 && varietyCount >= 3) || (passwordLength >= 12 && varietyCount >= 4)) {
-    strengthConfig = STRENGTH_CONFIGS.strong;
-  } else if (passwordLength >= 10 && varietyCount >= 2) {
-    strengthConfig = STRENGTH_CONFIGS.medium;
+  if (weaknesses.length > 0) {
+    warningText.textContent = "⚠️ Phát hiện mẫu dễ đoán: " + weaknesses.join("; ") + ".";
+    warningWrapper.classList.add("is-visible");
   } else {
-    strengthConfig = STRENGTH_CONFIGS.weak;
+    warningText.textContent = "";
+    warningWrapper.classList.remove("is-visible");
   }
 
+  let strengthConfig = STRENGTH_CONFIGS.weak;
+
+  if (weaknesses.length >= 2 || passwordLength < 6) {
+    strengthConfig = STRENGTH_CONFIGS.weak;
+  } else if (weaknesses.length === 1) {
+    if (passwordLength >= 16 && varietyCount >= 3) {
+      strengthConfig = STRENGTH_CONFIGS.medium;
+    } else {
+      strengthConfig = STRENGTH_CONFIGS.weak;
+    }
+  } else {
+    if ((passwordLength >= 20 && varietyCount >= 2) || (passwordLength >= 16 && varietyCount >= 4)) {
+      strengthConfig = STRENGTH_CONFIGS.veryStrong;
+    } else if ((passwordLength >= 16 && varietyCount >= 2) || (passwordLength >= 14 && varietyCount >= 3) || (passwordLength >= 12 && varietyCount >= 4)) {
+      strengthConfig = STRENGTH_CONFIGS.strong;
+    } else if (passwordLength >= 10 && varietyCount >= 2) {
+      strengthConfig = STRENGTH_CONFIGS.medium;
+    } else {
+      strengthConfig = STRENGTH_CONFIGS.weak;
+    }
+  }
+
+  /* GPU Hardware-accelerated Transition qua scaleX */
   const meterFill = getElement("strengthMeterFill");
-  meterFill.style.width = strengthConfig.percent + "%";
+  meterFill.style.transform = `scaleX(${strengthConfig.ratio})`;
   meterFill.style.backgroundColor = strengthConfig.color;
 
   const statusTextElement = getElement("strengthStatusText");
@@ -644,12 +891,17 @@ function resetStrengthView() {
   updateCriteriaBadge("badgeSymbol", false);
 
   const meterFill = getElement("strengthMeterFill");
-  meterFill.style.width = "0%";
+  meterFill.style.transform = "scaleX(0)";
   meterFill.style.backgroundColor = "transparent";
 
   const statusTextElement = getElement("strengthStatusText");
   statusTextElement.textContent = "Chưa có mật mã";
   statusTextElement.style.color = "var(--color-text-muted)";
+
+  const warningWrapper = getElement("strengthWarningWrapper");
+  const warningText = getElement("strengthWarningText");
+  warningText.textContent = "";
+  warningWrapper.classList.remove("is-visible");
 }
 
 function clearCopyState() {
@@ -657,6 +909,7 @@ function clearCopyState() {
     clearTimeout(copyTimerTracker);
     copyTimerTracker = null;
   }
+  isCopyingInProgress = false;
 
   const buttonCopy = getElement("buttonCopyMain");
   getElement("labelButtonCopy").textContent = "Sao Chép";
@@ -664,11 +917,45 @@ function clearCopyState() {
   buttonCopy.classList.remove("is-success");
 }
 
+/**
+ * Fallback sao chép 2 lớp an toàn cho mọi trình duyệt, iOS và In-App WebViews
+ */
+function executeFallbackCopy(textToCopy) {
+  const temporaryTextArea = document.createElement("textarea");
+  temporaryTextArea.value = textToCopy;
+  temporaryTextArea.setAttribute("readonly", "");
+  temporaryTextArea.style.position = "absolute";
+  temporaryTextArea.style.top = "0";
+  temporaryTextArea.style.left = "0";
+  temporaryTextArea.style.width = "1px";
+  temporaryTextArea.style.height = "1px";
+  temporaryTextArea.style.padding = "0";
+  temporaryTextArea.style.border = "none";
+  temporaryTextArea.style.outline = "none";
+  temporaryTextArea.style.boxShadow = "none";
+  temporaryTextArea.style.background = "transparent";
+  temporaryTextArea.style.opacity = "0";
+  temporaryTextArea.style.pointerEvents = "none";
+
+  document.body.appendChild(temporaryTextArea);
+  temporaryTextArea.focus({ preventScroll: true });
+  temporaryTextArea.setSelectionRange(0, temporaryTextArea.value.length);
+
+  let isSuccessful = false;
+  try {
+    isSuccessful = document.execCommand("copy");
+  } catch (err) {
+    isSuccessful = false;
+  }
+  document.body.removeChild(temporaryTextArea);
+  return isSuccessful;
+}
+
 async function copyToClipboard(textToCopy, triggerButton) {
+  if (isCopyingInProgress) return;
+
   if (!textToCopy) {
-    if (copyTimerTracker) {
-      clearTimeout(copyTimerTracker);
-    }
+    clearCopyState();
     getElement("labelButtonCopy").textContent = "Chưa Có Mã!";
     copyTimerTracker = setTimeout(() => {
       clearCopyState();
@@ -676,22 +963,22 @@ async function copyToClipboard(textToCopy, triggerButton) {
     return;
   }
 
+  isCopyingInProgress = true;
+  let copySucceeded = false;
+
   try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(textToCopy);
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+        copySucceeded = true;
+      } catch (clipErr) {
+        copySucceeded = executeFallbackCopy(textToCopy);
+      }
     } else {
-      const temporaryTextArea = document.createElement("textarea");
-      temporaryTextArea.value = textToCopy;
-      temporaryTextArea.style.position = "fixed";
-      temporaryTextArea.style.left = "-9999px";
-      temporaryTextArea.style.top = "0";
-      document.body.appendChild(temporaryTextArea);
-      temporaryTextArea.focus();
-      temporaryTextArea.select();
-      const isSuccessful = document.execCommand("copy");
-      document.body.removeChild(temporaryTextArea);
-      if (!isSuccessful) throw new Error("Fallback copy thất bại");
+      copySucceeded = executeFallbackCopy(textToCopy);
     }
+
+    if (!copySucceeded) throw new Error("Copy thất bại trên mọi tầng API");
 
     if (copyTimerTracker) {
       clearTimeout(copyTimerTracker);
@@ -706,14 +993,15 @@ async function copyToClipboard(textToCopy, triggerButton) {
     }, 1800);
   } catch (error) {
     getElement("labelButtonCopy").textContent = "Lỗi Chép!";
-    console.error("Lỗi sao chép:", error);
     copyTimerTracker = setTimeout(() => {
       clearCopyState();
     }, 1800);
+  } finally {
+    isCopyingInProgress = false;
   }
 }
 
-/* Checkbox: Tự động tạo lại mã ngay và huỷ bộ đếm chờ của thanh trượt */
+/* Checkbox: Tự động sinh mã mới ngay khi có thay đổi */
 document.querySelectorAll(".character-option-checkbox").forEach((checkbox) => {
   checkbox.addEventListener("change", function() {
     const mainCheckboxes = [
@@ -728,44 +1016,37 @@ document.querySelectorAll(".character-option-checkbox").forEach((checkbox) => {
       this.checked = true;
     }
 
-    clearSliderDebounce();
     generateNewPassword();
   });
 });
 
-/* Thanh trượt: Đồng bộ số ngay, chỉ tạo mã sau 1 giây dừng trượt */
+/* Thanh trượt: Đồng bộ số ngay khi trượt; CHỈ sinh mã khi nhả tay/chuột (change) */
 const lengthSliderInput = getElement("passwordLengthSlider");
 const lengthNumberInput = getElement("passwordLengthInput");
 
 lengthSliderInput.addEventListener("input", (event) => {
-  const currentVal = event.target.value;
-  lengthNumberInput.value = currentVal;
-
-  clearSliderDebounce();
-  sliderDebounceTimer = setTimeout(() => {
-    generateNewPassword();
-  }, 1000);
+  lengthNumberInput.value = event.target.value;
 });
 
-/* Ô nhập số: Chuẩn hoá và sinh mã khi hoàn tất nhập */
-lengthNumberInput.addEventListener("change", () => {
-  clearSliderDebounce();
-  syncPasswordLength(lengthNumberInput.value);
+lengthSliderInput.addEventListener("change", () => {
   generateNewPassword();
 });
 
-lengthNumberInput.addEventListener("blur", () => {
-  clearSliderDebounce();
+/* Ô nhập số: Chuẩn hóa bitwise an toàn, chặn 'e' và ký tự đặc biệt */
+lengthNumberInput.addEventListener("change", () => {
   syncPasswordLength(lengthNumberInput.value);
   generateNewPassword();
 });
 
 lengthNumberInput.addEventListener("keydown", (event) => {
+  if (event.key === "e" || event.key === "E" || event.key === "+" || event.key === "-") {
+    event.preventDefault();
+  }
   if (event.key === "Enter") {
     event.preventDefault();
-    clearSliderDebounce();
     syncPasswordLength(lengthNumberInput.value);
     generateNewPassword();
+    lengthNumberInput.blur();
   }
 });
 
@@ -787,7 +1068,6 @@ getElement("mainPasswordInput").addEventListener("input", (event) => {
 
 /* Nút tạo mã và nút sao chép */
 getElement("buttonCreatePassword").addEventListener("click", () => {
-  clearSliderDebounce();
   generateNewPassword();
 });
 
